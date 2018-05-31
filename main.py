@@ -1,25 +1,26 @@
 import websockets
 import nfc
 import time
+from nfcproviders.NFCProvider import NFCProvider
+from nfcproviders.PN532Provider import PN532Provider
 
 
 def current_milli_time():
     return int(round(time.time() * 1000))
 
 
-def parse_device_to_id(device):
-    _, string = nfc.str_nfc_target(device, False)
-    str_list = string.split("\n")
-    uid = str_list[2].strip().replace("  ", " ")
-    return uid[uid.index(": ") + 2:]
+def read_single_card(nfc_provider: NFCProvider):
+    was_device_found, device = nfc_provider.scan_for_device()
+    while not was_device_found:
+        was_device_found, device = nfc_provider.scan_for_device()
 
 
-def wait_for_card_remove(on_card_first_found=None, on_card_found=None, on_card_removed=None):
-    def default_on_first_found(id):
-        print("Card found: %s" % id)
+def wait_for_card_remove(nfc_provider: NFCProvider, on_card_first_found=None, on_card_found=None, on_card_removed=None):
+    def default_on_first_found(device_id):
+        print("Card found: %s" % device_id)
 
-    def default_on_found(id):
-        print("Found %s" % card_id)
+    def default_on_found(device_id):
+        print("Found %s" % device_id)
 
     def default_on_removed():
         print("Card removed.")
@@ -36,20 +37,16 @@ def wait_for_card_remove(on_card_first_found=None, on_card_found=None, on_card_r
     is_device_found = False
     print("Waiting for device...")
     while not is_device_found:
-        number_found, devices = read_nfc()
-        if number_found > 0:
-            card_id = parse_device_to_id(devices[0])
+        device_was_found, device = nfc_provider.scan_for_device()
+        if device_was_found:
+            card_id = device.pretty_card_id
             on_card_first_found(card_id)
-            while number_found > 0:
-                number_found, devices = read_nfc()
+            while device_was_found:
+                device_was_found, device = nfc_provider.scan_for_device()
                 is_device_found = True
                 on_card_found(card_id)
             else:
                 on_card_removed()
-
-
-def read_nfc():
-    return nfc.initiator_list_passive_targets(listener, modulation, 1)
 
 
 def require_card_for_time(millis):
@@ -57,7 +54,7 @@ def require_card_for_time(millis):
     time_elapsed = 0
     is_time_finished = False
 
-    def on_card_found(id):
+    def on_card_found(device_found):
         nonlocal starting_time, time_elapsed, is_time_finished
         if not starting_time:
             starting_time = current_milli_time()
@@ -76,21 +73,11 @@ def require_card_for_time(millis):
 
 if __name__ == '__main__':
     try:
-        context = nfc.init()
-        reader = nfc.list_devices(context, 2)[0]
-
-        listener = nfc.open(context, reader)
-        modulation = nfc.modulation()
-        modulation.nmt = nfc.NMT_ISO14443A
-        modulation.nbr = nfc.NBR_106
-
-        number_found, devices = nfc.initiator_list_passive_targets(listener, modulation, 1)
-        wait_for_card_remove()
-        # require_card_for_time(5000)
+        nfc_provider = PN532Provider()
+        read_single_card(nfc_provider)
 
     except KeyboardInterrupt:
-        nfc.close(listener)
-        nfc.exit(context)
+        nfc_provider.close()
 
 
 
