@@ -6,20 +6,22 @@
 
 * Install libnfc
 
-
+    ```bash
     wget http://dl.bintray.com/nfc-tools/sources/libnfc-1.7.1.tar.bz2
     tar -xf libnfc-1.7.1.tar.bz2  
     cd libnfc-1.7.1
     ./configure --prefix=/usr --sysconfdir=/etc
     make
     sudo make install 
+    ```
     
 * Set up libnfc configuation:
 
-
+    ```bash
     cd /etc
     sudo mkdir nfc
     sudo nano /etc/nfc/libnfc.conf
+    ```
     
 * Copy and paste the contents of libnfc.conf into your local file
   * Replace `device.connstring = "pn532_spi:/dev/spidev0.0:500000"` with the string for your form of connection:
@@ -29,8 +31,11 @@
     
 * Prepare nfc-bindings for Python support.
 
-
+    ```bash
     git clone https://github.com/xantares/nfc-bindings.git
     cd nfc-bindings
     cmake -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DCMAKE_INSTALL_PREFIX=~/.local .
     make install
+    ```
+    
+    
