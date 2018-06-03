@@ -2,7 +2,6 @@ from NFCDevice import NFCDevice
 
 
 class NFCProvider:
-
     def scan_for_device(self) -> (bool, NFCDevice):
         raise RuntimeError("Device scanning has not be implemented.")
 
