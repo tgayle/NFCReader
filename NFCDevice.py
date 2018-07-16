@@ -1,19 +1,11 @@
-import nfc
+# import nfc
+from nfcproviders import NFCProviderUtil
 
 
 class NFCDevice:
-    def __init__(self, device) -> None:
-        self.pretty_card_id = pretty_id_from_device(device)
-        self.card_id = self.pretty_card_id.replace(" ", "")
+    def __init__(self, id) -> None:
+        self.card_id = id
+        self.pretty_card_id = NFCProviderUtil.insert_spaces_every_n_chars(id, 2, num_of_spaces=1)
 
 
-def pretty_id_from_device(device) -> str:
-    """
-    Returns the id of an NFC device with spaces every two characters.
-    :param device: A device from the nfc library
-    :return: str
-    """
-    string = nfc.str_nfc_target(device, False)[1]
-    str_list = string.split("\n")
-    uid = str_list[2].strip().replace("  ", " ")
-    return uid[uid.index(": ") + 2:]
+

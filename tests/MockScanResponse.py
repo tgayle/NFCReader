@@ -21,10 +21,11 @@ _replaceable_scan_response = """ISO/IEC 14443A (000 kbps) target:
 class MockScanResponse:
 
     def __init__(self, uid="", atqa=_default_atqa, sak=_default_sak, ats=_default_ats) -> None:
-        self.atqa = atqa
-        self.uid = uid
-        self.sak = sak
-        self.ats = ats
+        # self.atqa = atqa
+        # self.uid = uid
+        # self.sak = sak
+        # self.ats = ats
+        self.update_response(uid=uid, atqa=atqa, sak=sak, ats=ats)
 
     def update_response(self, uid="", atqa="", sak="", ats=""):
         self._update_uid(uid)
@@ -48,6 +49,8 @@ class MockScanResponse:
         self.ats = Util.make_general_id_safe(ats) if Util.is_general_id_valid(ats) else ""
         
     def _generate_scan_response(self):
+        if self.uid is None or not len(self.uid):
+            return ""
         response = _replaceable_scan_response.replace(_atqa_placeholder, Util.insert_spaces_every_n_chars(self.atqa))
         response = response.replace(_uid_placeholder, Util.insert_spaces_every_n_chars(self.uid))
         response = response.replace(_sak_placeholder, Util.insert_spaces_every_n_chars(self.sak))

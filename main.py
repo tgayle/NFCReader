@@ -3,6 +3,7 @@ import nfc
 import time
 from nfcproviders.NFCProvider import NFCProvider
 from nfcproviders.PN532Provider import PN532Provider
+from tests.MockNFCProvider import MockNFCProvider
 
 
 def current_milli_time():
@@ -11,8 +12,9 @@ def current_milli_time():
 
 def read_single_card(nfc_provider: NFCProvider):
     was_device_found, device = nfc_provider.scan_for_device()
-    while not was_device_found:
-        was_device_found, device = nfc_provider.scan_for_device()
+    # while not was_device_found:
+    #     was_device_found, device = nfc_provider.scan_for_device()
+    return device
 
 
 def wait_for_card_remove(nfc_provider: NFCProvider, on_card_first_found=None, on_card_found=None, on_card_removed=None):
@@ -73,8 +75,13 @@ def require_card_for_time(millis):
 
 if __name__ == '__main__':
     try:
-        nfc_provider = PN532Provider()
-        read_single_card(nfc_provider)
+        nfc_provider = MockNFCProvider()
+        while True:
+            device_found = nfc_provider.scan_for_device()[1]
+            if device_found is not None:
+                print(device_found.pretty_card_id)
+            else:
+                print("None")
 
     except KeyboardInterrupt:
         nfc_provider.close()

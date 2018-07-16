@@ -1,7 +1,7 @@
 * Install dependencies: nfc-bindings for python3
 
 
-    sudo apt-get install libusb-dev libpcsclite-dev git cmake swig python3-dev python3-pip python3-tk python3-lxml python3-six
+    `sudo apt-get install libusb-dev libpcsclite-dev git cmake swig python3-dev python3-pip python3-tk python3-lxml python3-six`
     
 
 * Install libnfc

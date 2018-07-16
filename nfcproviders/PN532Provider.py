@@ -2,6 +2,8 @@ from nfcproviders.NFCProvider import NFCProvider
 from NFCDevice import NFCDevice
 import nfc
 
+from nfcproviders.PN532Parser import PN532Parser
+
 
 class PN532Provider(NFCProvider):
     def __init__(self) -> None:
@@ -22,7 +24,7 @@ class PN532Provider(NFCProvider):
         number_devices_found, devices = nfc.initiator_list_passive_targets(self.listener, self.modulation, 1)
         if number_devices_found <= 0:
             return False, None
-        return True, NFCDevice(devices[0])
+        return True, NFCDevice(str(PN532Parser(devices[0])))
 
     def close(self):
         nfc.close(self.listener)
