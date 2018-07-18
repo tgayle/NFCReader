@@ -103,5 +103,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+#Self-added things
 node_modules/
 .idea/
+.eslintrc.json
+.vscode/
